@@ -1,0 +1,36 @@
+import pulp as p
+import math as m
+
+A1=(-1,2)
+A2=(-1,0)
+D1=(1,-1)
+D2=(1,2)
+
+L=[A1,A2]
+M=[D1,D2]
+C=[]
+
+for i in L :
+    for j in M:
+        C.append(m.dist(i,j))
+
+
+prob = p.LpProblem("prob", p.LpMinimize)
+a = p.LpVariable('Du point D1 au point A1', lowBound=0, cat='integer')
+b = p.LpVariable('Du point D2 au point A1', lowBound=0, cat='integer')
+c = p.LpVariable('Du point D1 au point A2', lowBound=0, cat='integer')
+d = p.LpVariable('Du point D2 au point A2', lowBound=0, cat='integer')
+
+
+prob+= C[0]*a+C[1]*b+C[2]*c+C[3]*d
+
+prob+= a+b==3
+prob+= c+d==2
+prob+= a+c>= 3
+prob+= b+d>= 1
+
+prob.solve()
+print("Status:",p.LpStatus[prob.status])
+for v in prob.variables():
+    print("il faut transporter",p.value(v), v.name)
+print("le coût totale est de " ,p.value(prob.objective))
